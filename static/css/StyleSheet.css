@@ -4,7 +4,7 @@ body{
   background-size: 100% 120%;  
 }
 
-#user_buttons,#user_hand,#scores,#pc_hand{
+#user_buttons,#user_hand,#scores,#pc_hand,#pc_buttons{
 	display: inline-block;
 }
 
@@ -45,6 +45,15 @@ td{
 	width: 25%;
 	background-color: white;  
   	border-radius: 10px;
+  	margin-right: 20px;
+}
+
+.show{
+	display: block;
+}
+
+.hidden{
+	display: none;
 }
 
 
