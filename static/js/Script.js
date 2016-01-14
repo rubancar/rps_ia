@@ -1,16 +1,9 @@
 $(document).ready(function(){
     namespace = '/test'; // change to an empty string to use the global namespace
-
-    // the socket.io documentation recommends sending an explicit package upon connection
-    // this is specially important when using the global namespace
     socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
-
-    // event handler for server sent data
-    // the data is displayed in the "Received" section of the page
     socket.on('my response', function(msg) {
         console.log(msg.pc_jugada);        
         showPCHand(msg.pc_jugada);
-        //$('#log').append('<br>' + $('<div/>').text('Usuario: ' + msg.user_jugada + ' PC: ' + msg.pc_jugada).html());
         if(msg.user_jugada!=undefined) setScores(msg.user_jugada,msg.pc_jugada);
     });
 

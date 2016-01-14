@@ -8,28 +8,32 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, \
 from rps import HistoryTree
 
 
-global cadena, arbol_de_juego_pc, arbol_de_juego_user, salida, meta_predictor, metascore, \
-	  gana, pierde, prediccion_pc_por_nivel, prediccion_user_por_nivel, jugadas, mapeo, y
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
 #iniciamos varibales para juego
-cadena = []
-arbol_de_juego_pc = HistoryTree()
-arbol_de_juego_user = HistoryTree()
-salida = random.choice(["R", "P", "S"])
-y = salida
-meta_predictor = [salida] * (6 * SIZE + 6)
-metascore = [0] * (6 * SIZE + 6)
-gana = ['RS', 'SP', 'PR']
-pierde = ['SR', 'PS', 'RP']
-prediccion_pc_por_nivel = [salida] * SIZE
-prediccion_user_por_nivel = [salida] * SIZE
-jugadas = ['R', 'P', 'S']
-mapeo = {'R':'Piedra','P':'Papel','S':'Tijera'}
 
+
+def iniciar_juego():
+	global cadena, arbol_de_juego_pc, arbol_de_juego_user, salida, meta_predictor, metascore, \
+	  gana, pierde, prediccion_pc_por_nivel, prediccion_user_por_nivel, jugadas, mapeo, y
+	arbol_de_juego_pc = HistoryTree()
+	arbol_de_juego_user = HistoryTree()
+	salida = random.choice(["R", "P", "S"])
+	y = salida
+	meta_predictor = [salida] * (6 * SIZE + 6)
+	metascore = [0] * (6 * SIZE + 6)
+	gana = ['RS', 'SP', 'PR']
+	pierde = ['SR', 'PS', 'RP']
+	prediccion_pc_por_nivel = [salida] * SIZE
+	prediccion_user_por_nivel = [salida] * SIZE
+	jugadas = ['R', 'P', 'S']
+	mapeo = {'R':'Piedra','P':'Papel','S':'Tijera'}
+
+iniciar_juego()
 
 def obtener_respuesta(x):
 	global salida
@@ -104,31 +108,28 @@ def disconnect_request():
 def piedra(message):
 	arbol_de_juego_pc.new_move(salida + 'R')
 	arbol_de_juego_user.new_move(salida + 'R')
-	cadena.append('R')
-	emit('my response', {'user_jugada': 'Piedra', 'pc_jugada':obtener_respuesta('R'),'count': 0})
+	emit('my response', {'user_jugada': 'Piedra', 'pc_jugada':obtener_respuesta('R')})
 
 @socketio.on('papel', namespace='/test')
 def papel(message):
 	arbol_de_juego_pc.new_move(salida + 'P')
 	arbol_de_juego_user.new_move(salida + 'P')
-	cadena.append('P')
-	emit('my response', {'user_jugada': 'Papel', 'pc_jugada':obtener_respuesta('P'),'count': 0})
+	emit('my response', {'user_jugada': 'Papel', 'pc_jugada':obtener_respuesta('P')})
 
 @socketio.on('tijera', namespace='/test')
 def tijera(message):
 	arbol_de_juego_pc.new_move(salida + 'S')
 	arbol_de_juego_user.new_move(salida + 'S')
-	cadena.append('S')
-	emit('my response', {'user_jugada': 'Tijera', 'pc_jugada':obtener_respuesta('S'),'count': 0})
+	emit('my response', {'user_jugada': 'Tijera', 'pc_jugada':obtener_respuesta('S')})
 
 @socketio.on('obtener cadena', namespace='/test')
 def obtener_cadena():
-	emit('my response', {'data': cadena, 'count': 0})
+	emit('my response', { 'count': 0})
 
 @socketio.on('reset juego', namespace='/test')
-def obtener_cadena():
-	del cadena[:]
-	emit('my response', {'data': cadena, 'count': 0})
+def reset_juego():
+	iniciar_juego()
+	emit('my response', {'data': "juego reseteado"})
 
 @socketio.on('connect', namespace='/test')
 def test_connect():
