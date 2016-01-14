@@ -105,21 +105,21 @@ def piedra(message):
 	arbol_de_juego_pc.new_move(salida + 'R')
 	arbol_de_juego_user.new_move(salida + 'R')
 	cadena.append('R')
-	emit('my response', {'user_jugada': 'piedra', 'pc_jugada':obtener_respuesta('R'),'count': 0})
+	emit('my response', {'user_jugada': 'Piedra', 'pc_jugada':obtener_respuesta('R'),'count': 0})
 
 @socketio.on('papel', namespace='/test')
 def papel(message):
 	arbol_de_juego_pc.new_move(salida + 'P')
 	arbol_de_juego_user.new_move(salida + 'P')
 	cadena.append('P')
-	emit('my response', {'user_jugada': 'papel', 'pc_jugada':obtener_respuesta('P'),'count': 0})
+	emit('my response', {'user_jugada': 'Papel', 'pc_jugada':obtener_respuesta('P'),'count': 0})
 
 @socketio.on('tijera', namespace='/test')
 def tijera(message):
 	arbol_de_juego_pc.new_move(salida + 'S')
 	arbol_de_juego_user.new_move(salida + 'S')
 	cadena.append('S')
-	emit('my response', {'user_jugada': 'tijera', 'pc_jugada':obtener_respuesta('S'),'count': 0})
+	emit('my response', {'user_jugada': 'Tijera', 'pc_jugada':obtener_respuesta('S'),'count': 0})
 
 @socketio.on('obtener cadena', namespace='/test')
 def obtener_cadena():
