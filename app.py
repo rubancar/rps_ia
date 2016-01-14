@@ -8,28 +8,32 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, \
 from rps import HistoryTree
 
 
-global cadena, arbol_de_juego_pc, arbol_de_juego_user, salida, meta_predictor, metascore, \
-	  gana, pierde, prediccion_pc_por_nivel, prediccion_user_por_nivel, jugadas, mapeo, y
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
 #iniciamos varibales para juego
-cadena = []
-arbol_de_juego_pc = HistoryTree()
-arbol_de_juego_user = HistoryTree()
-salida = random.choice(["R", "P", "S"])
-y = salida
-meta_predictor = [salida] * (6 * SIZE + 6)
-metascore = [0] * (6 * SIZE + 6)
-gana = ['RS', 'SP', 'PR']
-pierde = ['SR', 'PS', 'RP']
-prediccion_pc_por_nivel = [salida] * SIZE
-prediccion_user_por_nivel = [salida] * SIZE
-jugadas = ['R', 'P', 'S']
-mapeo = {'R':'Piedra','P':'Papel','S':'Tijera'}
 
+
+def iniciar_juego():
+	global cadena, arbol_de_juego_pc, arbol_de_juego_user, salida, meta_predictor, metascore, \
+	  gana, pierde, prediccion_pc_por_nivel, prediccion_user_por_nivel, jugadas, mapeo, y
+	arbol_de_juego_pc = HistoryTree()
+	arbol_de_juego_user = HistoryTree()
+	salida = random.choice(["R", "P", "S"])
+	y = salida
+	meta_predictor = [salida] * (6 * SIZE + 6)
+	metascore = [0] * (6 * SIZE + 6)
+	gana = ['RS', 'SP', 'PR']
+	pierde = ['SR', 'PS', 'RP']
+	prediccion_pc_por_nivel = [salida] * SIZE
+	prediccion_user_por_nivel = [salida] * SIZE
+	jugadas = ['R', 'P', 'S']
+	mapeo = {'R':'Piedra','P':'Papel','S':'Tijera'}
+
+iniciar_juego()
 
 def obtener_respuesta(x):
 	global salida
@@ -126,9 +130,9 @@ def obtener_cadena():
 	emit('my response', {'data': cadena, 'count': 0})
 
 @socketio.on('reset juego', namespace='/test')
-def obtener_cadena():
-	del cadena[:]
-	emit('my response', {'data': cadena, 'count': 0})
+def reset_juego():
+	iniciar_juego()
+	emit('my response', {'data': "juego reseteado"})
 
 @socketio.on('connect', namespace='/test')
 def test_connect():

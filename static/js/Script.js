@@ -10,7 +10,7 @@ $(document).ready(function(){
             socket.on('my response', function(msg) {
                 console.log(msg)
                 //poner funcion msg.pc_jugada
-                $('#log').append('<br>' + $('<div/>').text('Usuario: ' + msg.user_jugada + ' PC: ' + msg.pc_jugada).html());
+                //$('#log').append('<br>' + $('<div/>').text('Usuario: ' + msg.user_jugada + ' PC: ' + msg.pc_jugada).html());
             });
 
             // event handler for new connections
@@ -107,6 +107,8 @@ function resetScores(){
     document.getElementById("win_score").innerHTML=0;
     document.getElementById("tie_score").innerHTML=0;
     document.getElementById("lose_score").innerHTML=0;
+
+    socket.emit('reset juego');
 }
 
 
