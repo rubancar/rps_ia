@@ -4,12 +4,49 @@ body{
   background-size: 100% 120%;  
 }
 
-#mano_user{
-  width: 30%;
-  height: 30%;
-  background-color: white;
+#user_buttons,#user_hand,#scores,#pc_hand{
+	display: inline-block;
 }
 
 ul{
-  list-style-type: none;
+  	list-style-type: none;
 }
+
+#user_hand{
+	width: 25%;
+	background-color: white;
+  	margin-left: 20px;
+  	border-radius: 10px;
+}
+
+#scores{
+	text-align: center;
+	margin: 0px 75px 200px 75px;
+}
+
+td{
+	width:55px;
+	height: 70px;
+}
+
+#table_heads{
+	background-color: #f3f1f1;	
+	font-family: 'Century Gothic';
+}
+
+#table_scores{
+	background-color: #121212;
+	font-family: georgia;
+	font-size: 50px;
+	color: #FFFF00;
+}
+
+#pc_hand{
+	width: 25%;
+	background-color: white;  
+  	border-radius: 10px;
+}
+
+
+
+
