@@ -84,7 +84,7 @@ def obtener_respuesta(x):
 
 @app.route('/')
 def index():
-	return render_template('index.html')
+	return render_template('index2.html')
 
 @socketio.on('my event', namespace='/test')
 def test_message(message):

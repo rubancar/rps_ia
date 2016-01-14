@@ -4,24 +4,26 @@
     <head>
         <meta charset="utf-8" />
         <title>Rock-Paper-Scissors</title>
-        <link rel="stylesheet" href="/static/css/StyleSheet.css"/>
-        <script src="/static/js/jquery.js"></script>
-        <script src="/static/js/Script.js"></script>
-        <link rel="shortcut icon" href="/static/images/rsp_icon.ico">
+        <link rel="stylesheet" href="../static/css/StyleSheet.css"/>
+        <script src="../static/js/jquery.js"></script>
+        <script src="../static/js/Script.js"></script>
+        <link rel="shortcut icon" href="../static/images/rsp_icon.ico">
     </head>
     <body>        
-        <center><img src="/static/images/rsp.png" width=200 height=200></center>
+        <center><img src="../static/images/rsp.png" width=200 height=200></center>
         <div>
             <div id="user_buttons">
                 <ul>
-                    <li><img src="/static/images/rock_logo.png" width=100 height=100></li>
-                    <li><img src="/static/images/paper_logo.png" width=100 height=100></li>
-                    <li><img src="/static/images/scissor_logo.png" width=100 height=100></li>
+                    <li><a href="#" onclick="javascript:showUserHand(this);" data-section="user_rock_hand"><img src="../static/images/rock_logo.png" title="Play Rock" width=100 height=100></a></li>
+                    <li><a href="#" onclick="javascript:showUserHand(this);" data-section="user_paper_hand"><img src="../static/images/paper_logo.png" title="Play Paper" width=100 height=100></a></li>
+                    <li><a href="#" onclick="javascript:showUserHand(this);" data-section="user_scissors_hand"><img src="../static/images/scissor_logo.png" title="Play Scissors" width=100 height=100></a></li>
                 </ul>
             </div>
                         
             <div id="user_hand">
-                <img id="user_choice" src="/static/images/user_rock.png" width=300 height=300 style="border-radius: 5px; margin: 0px 0px -4px 0px;">
+                <img id="user_rock_hand" class="show" src="../static/images/user_rock.png" width=300 height=300 style="border-radius: 5px;">
+                <img id="user_paper_hand" class="hidden" src="../static/images/user_paper.png" width=300 height=300 style="border-radius: 5px;">
+                <img id="user_scissors_hand" class="hidden" src="../static/images/user_scissor.png" width=300 height=300 style="border-radius: 5px;">
             </div>
 
             <div id="scores">
@@ -40,9 +42,13 @@
             </div>
 
             <div id="pc_hand">
-                <img id="pc_choice" src="/static/images/pc_rock.png" width=300 height=300 style="border-radius: 5px; margin: 0px 0px -4px 37px;">
+                <img id="rock_hand" class="show" src="../static/images/pc_rock.png" width=300 height=300 style="border-radius: 5px; margin: 0px 0px 0px 37px;">
+                <img id="paper_hand"class="hidden" src="../static/images/pc_rock.png" width=300 height=300 style="border-radius: 5px; margin: 0px 0px -4px 37px;">
+                <img id="scissors_hand" class="hidden" src="../static/images/pc_rock.png" width=300 height=300 style="border-radius: 5px; margin: 0px 0px -4px 37px;">
             </div>
 
-
+            <div id="pc_buttons">
+                <img src="../static/images/alg_logo.png" title="See what PC is thinking" width=100 height=100 style="margin-bottom: 100%;">
+            </div>
     </body>
 </html>
