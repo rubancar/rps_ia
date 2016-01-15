@@ -56,6 +56,32 @@ td{
 	display: none;
 }
 
+#win,#tie,#lose{
+	position: absolute;
+	font-family: impact;
+    font-size: 125px;    
+    text-shadow: -3px 0 white, 0 3px white, 3px 0 white, 0 -3px white;
+}
+
+#win{
+	margin-top: -19%;
+    margin-left: 40.5%;
+	color: green;
+}
+
+#tie{
+	margin-top: -19%;
+    margin-left: 43%;
+	color: #7B7F7B;
+}
+
+#lose{
+	margin-top: -19%;
+    margin-left: 39.5%;
+	color: #E40000;
+}
+
+
 
 
 

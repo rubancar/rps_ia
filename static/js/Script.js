@@ -67,10 +67,43 @@ function showPCHand(element) {
 }
 
 function setScores(user,pc){    
-    if(user==pc) addScore("tie");
+    if(user==pc){
+        addScore("tie");
+        showScoreMsg("tie");
+    }
     jugada = user+pc;
-    if(jugada=="PiedraTijera" || jugada=="TijeraPapel" || jugada=="PapelPiedra") addScore("win");
-    if(jugada=="TijeraPiedra" || jugada=="PapelTijera" || jugada=="PiedraPapel") addScore("lose");
+    if(jugada=="PiedraTijera" || jugada=="TijeraPapel" || jugada=="PapelPiedra"){
+        addScore("win");  
+        showScoreMsg("win");
+    } 
+    if(jugada=="TijeraPiedra" || jugada=="PapelTijera" || jugada=="PiedraPapel"){
+        addScore("lose");
+        showScoreMsg("lose");
+    }
+}
+
+function showScoreMsg(score){
+    $("#win").attr("class","hidden");
+    $("#tie").attr("class","hidden");
+    $("#lose").attr("class","hidden");
+    var seconds = 1700;
+    switch(score){
+        case "win":
+            $("#win").attr("class","show");
+            $("#win").fadeIn();
+            $("#win").fadeOut(seconds);
+            break;
+        case "tie":
+            $("#tie").attr("class","show");
+            $("#tie").fadeIn();
+            $("#tie").fadeOut(seconds);
+            break;
+        case "lose":
+            $("#lose").attr("class","show");
+            $("#lose").fadeIn();
+            $("#lose").fadeOut(seconds);
+            break;
+    }
 }
 
 function addScore(element){
@@ -93,6 +126,10 @@ function resetScores(){
     document.getElementById("win_score").innerHTML=0;
     document.getElementById("tie_score").innerHTML=0;
     document.getElementById("lose_score").innerHTML=0;
+    document.getElementById("user_rock_hand").setAttribute("class","show");
+    document.getElementById("user_paper_hand").setAttribute("class","hidden");
+    document.getElementById("user_scissors_hand").setAttribute("class","hidden");
+    showPCHand("Piedra");
     socket.emit('reset juego');
 }
 
