@@ -131,6 +131,12 @@ def reset_juego():
 	iniciar_juego()
 	emit('my response', {'data': "juego reseteado"})
 
+@socketio.on('obtener arbol', namespace='/test')
+def obtener_arbol():
+	nodos = [1,2,3,4,5]
+	arcos = [(1,2),(1,3),(3,4),(4,5),(2,3)]
+	emit('arbol',{'nodos':nodos, 'arcos':arcos})
+
 @socketio.on('connect', namespace='/test')
 def test_connect():
 	emit('my response', {'data': 'Connected', 'count': 0})
@@ -142,7 +148,7 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-	socketio.run(app, debug=True)
+	socketio.run(app, debug=True, port=5000)
 
 
 

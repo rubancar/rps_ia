@@ -7,6 +7,13 @@ $(document).ready(function(){
         if(msg.user_jugada!=undefined) setScores(msg.user_jugada,msg.pc_jugada);
     });
 
+    socket.on('arbol', function(msg) {
+        console.log('nodos')
+        console.log(msg.nodos)
+        console.log('arcos')
+        console.log(msg.arcos)
+    });
+
     // event handler for new connections
     socket.on('connect', function() {
         socket.emit('my event', {data: 'I\'m connected!'});
@@ -18,6 +25,10 @@ $(document).ready(function(){
     });   
 });
 
+
+function showAlg(element){
+    socket.emit('obtener arbol');
+}
 
 function showUserHand(element) {
     var imgRock = document.getElementById("user_rock_hand");
