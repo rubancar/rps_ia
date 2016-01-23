@@ -88,7 +88,7 @@ class HistoryTree(object):
 
 
 
-class N(object):
+class Nodo(object):
     def __init__(self, parent=None):
         if parent is not None:
             self.depth = parent.depth + 1
@@ -105,9 +105,10 @@ class N(object):
 
         if len(input) > 1:
             if self.children[last_move] is None:
-                self.children[last_move] = HistoryNode(self)
+                self.children[last_move] = Nodo(self)
             self.children[last_move].new_move(input[1:])
         else:
+            #multiplicamos por un factor de 0.975
             self.distribution[last_move] += self.distribution[last_move] * 0.975 + 1
 
     def predict(self, input):
@@ -130,9 +131,9 @@ class N(object):
         return "profundidad "+str(self.depth)+" distribucion R:"+str(self.distribution['R'])+" S:"+str(self.distribution['S'])+" P:"+str(self.distribution['P'])
         
 
-class HistoryTree(object):
+class Arbol(object):
     def __init__(self):
-        self.root = HistoryNode()
+        self.raiz = Nodo()
 
         self.input = ''
 
@@ -142,12 +143,12 @@ class HistoryTree(object):
             self.input = self.input[-10:]
 
         for i in xrange(1,len(self.input)+1):
-            self.root.new_move(self.input[-i:])
+            self.raiz.new_move(self.input[-i:])
 
     def predict(self):
         results = {'R':0,'S':0,'P':0}
         for i in xrange(1, len(self.input)+1):
-            res = self.root.predict(self.input[-i:])
+            res = self.raiz.predict(self.input[-i:])
             #print res
             if res is not None:
                 for key in res:
@@ -160,4 +161,4 @@ class HistoryTree(object):
         return e[-1]
 
     def imprimir_arbol(self):
-        print self.root
+        print self.raiz

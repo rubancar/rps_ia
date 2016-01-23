@@ -133,8 +133,9 @@ def reset_juego():
 
 @socketio.on('obtener arbol', namespace='/test')
 def obtener_arbol():
-	nodos = [1,2,3,4,5]
-	arcos = [(1,2),(1,3),(3,4),(4,5),(2,3)]
+	#se envia estructura (id, jugada, valor)
+	nodos = [(0,'R',1),(1,'R',2),(2,'P',2),(3,'S',2),(4,'R',2),(5,'S',3)]
+	arcos = [(0,1),(0,3),(1,4),(3,5),(4,3),(4,5)]
 	emit('arbol',{'nodos':nodos, 'arcos':arcos})
 
 @socketio.on('connect', namespace='/test')
