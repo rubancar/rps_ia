@@ -4,6 +4,8 @@ body{
   background-size: 100% 120%;  
 }
 
+
+
 #user_buttons,#user_hand,#scores,#pc_hand,#pc_buttons{
 	display: inline-block;
 }
@@ -81,14 +83,46 @@ td{
 	color: #E40000;
 }
 
+h2{
+	font-family: 'Century Gothic';
+	margin-bottom: 45px;
+}
+
 #cy {
 	width: 100%;
 	height: 100%;
 	position: absolute;
 	left: 0;
 	top: 0;
-	z-index: 999;
+	z-index: 2;
 }
+
+.hideCanvas{
+	display: none;
+}
+
+.showCanvas{
+	visibility: visible;
+}
+
+#container{
+	margin-left: 10%;
+	font-family: georgia;
+}
+
+#imgCont,#msgPred{
+	display: table-cell;
+}
+
+#imgCont{
+	width: 50%;
+}
+
+#msgPred{
+	vertical-align: middle;
+}
+
+
 
 
 
