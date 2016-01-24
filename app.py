@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 import random, copy
-SIZE = 4
-WEIGHT_FACTOR = 7.
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
 	close_room, rooms, disconnect
-from rps import HistoryTree
-
-
+from rps import Arbol
 
 
 app = Flask(__name__)
@@ -15,74 +11,68 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
 #iniciamos varibales para juego
-
-
-def iniciar_juego():
-	global cadena, arbol_de_juego_pc, arbol_de_juego_user, salida, meta_predictor, metascore, \
-	  gana, pierde, prediccion_pc_por_nivel, prediccion_user_por_nivel, jugadas, mapeo, y
-	arbol_de_juego_pc = HistoryTree()
-	arbol_de_juego_user = HistoryTree()
+def empezar_juego():
+	global cadena, arbol_pc, arbol_jugador, salida, mejor_predictor, gana, pierde, \
+	prediccion_pc, prediccion_jugador, mapeo, opciones, todas_predicciones
+	arbol_pc = Arbol()
+	arbol_jugador = Arbol()
 	salida = random.choice(["R", "P", "S"])
-	y = salida
-	meta_predictor = [salida] * (6 * SIZE + 6)
-	metascore = [0] * (6 * SIZE + 6)
+	todas_predicciones = [salida] * 6
+	mejor_predictor = [0] * 6
 	gana = ['RS', 'SP', 'PR']
 	pierde = ['SR', 'PS', 'RP']
-	prediccion_pc_por_nivel = [salida] * SIZE
-	prediccion_user_por_nivel = [salida] * SIZE
-	jugadas = ['R', 'P', 'S']
+	opciones = ['R','P','S']
 	mapeo = {'R':'Piedra','P':'Papel','S':'Tijera'}
 
-iniciar_juego()
+empezar_juego()
 
-def obtener_respuesta(x):
+def predecir_respuesta(nueva_jugada):
 	global salida
-	print "antes de copia",salida
-	#global ultima
 	ultima = salida
-
-	for idx in xrange(len(metascore)):
-		if meta_predictor[idx] + x in gana:
-			metascore[idx] = metascore[idx] * 0.9 + 1
-		elif meta_predictor[idx] + x in pierde:
-			metascore[idx] = metascore[idx] * 0.9 - 1
+	'''
+	Seleccionamos el mejor predictor, de las 6 estrategias, basado en un disenio heuristico llamado
+	(Iocaine Powder) http://dan.egnor.name/iocaine.html
+	'''
+	for i in xrange(len(mejor_predictor)):
+		if todas_predicciones[i] + nueva_jugada in gana:
+			mejor_predictor[i] = mejor_predictor[i] * 0.9 + 1
+		elif todas_predicciones[i] + nueva_jugada in pierde:
+			mejor_predictor[i] = mejor_predictor[i] * 0.9 - 1
 		else:
-			metascore[idx] = metascore[idx] * 0.9 - 0.34
-	#realiza una prediccion recorriendo todo el arbol
-	prediccion_pc = arbol_de_juego_user.predict()
-	prediccion_user = arbol_de_juego_pc.predict()
-	#realiza una prediccion 
-	for j in xrange(SIZE):
-		prediccion_pc_por_nivel[j] = arbol_de_juego_pc.predict_i(j)
-		prediccion_user_por_nivel[j] = arbol_de_juego_user.predict_i(j)
-		
-	for i in xrange(3):
-		jugada_pc = jugadas[(jugadas.index(prediccion_pc) + i) % 3]
-		jugada_user = jugadas[(jugadas.index(prediccion_user) + i) % 3]
-		meta_predictor[i] = jugada_pc
-		meta_predictor[i + 3] = jugada_user
-		for j in xrange(SIZE):
-			jugada_pc = jugadas[(jugadas.index(prediccion_pc_por_nivel[j]) + i) % 3]
-			jugada_user = jugadas[(jugadas.index(prediccion_user_por_nivel[j]) + i) % 3]
-			meta_predictor[i + (j + 1) * 6] = jugada_pc
-			meta_predictor[i + 3 + (j + 1) * 6] = jugada_user
+			mejor_predictor[i] = mejor_predictor[i] * 0.9 - 0.34
 
-	best_predictor = metascore.index(max(metascore))
+	prediccion_pc = arbol_pc.predecir()
+	prediccion_jugador = arbol_jugador.predecir()
 
-	play_random = True
-	for score in metascore:
+	# 1) jugar estrategia propia (maquina)
+	todas_predicciones[0] = prediccion_pc
+	# 2) ponerme en los zapatos del jugador (adivinando) y jugar para vencer
+	todas_predicciones[1] = opciones[(opciones.index(prediccion_jugador) + 1) % 3]
+	# 3) rotar 1) por dos y jugar movimiento que lo hace perder 
+	todas_predicciones[2] = opciones[(opciones.index(prediccion_pc) + 2) % 3]
+	# 4) rotar 2) por dos, es lo mismo que 3)
+	todas_predicciones[3] = opciones[(opciones.index(prediccion_pc) + 2) % 3]
+	# 5) rotar 3) por dos
+	todas_predicciones[4] = opciones[(opciones.index(todas_predicciones[2]) + 2) % 3]
+	# 6) rotar 4) por dos
+	todas_predicciones[4] = opciones[(opciones.index(todas_predicciones[3]) + 2) % 3]
+
+	a_jugar = mejor_predictor.index(max(mejor_predictor))
+	jugar_aleatorio = True
+	for predictor in mejor_predictor:
 		#significa que el score ha ganado 3 veces seguidas
-		if score > 2.7:
-			play_random = False
-	if play_random:
+		if predictor > 2.7:
+			jugar_aleatorio = False
+	if jugar_aleatorio:
 		salida = random.choice(["R", "P", "S"])
-		#print "maquina-random:",salida
 	else:
-		salida = meta_predictor[best_predictor]
-		#print "maquina:",salida
+		salida = todas_predicciones[a_jugar]
 	print 'salida_final',salida
+	#print 'ARBOL:',arbol_jugador.imprimir_arbol()
+	#arbol_jugador.recorrer_arbol(arbol_jugador.raiz)
+	#arbol_jugador.visitados = []
+	#print 'arcos',arbol_jugador.imprimir_arcos()
 	return mapeo[ultima]
-
 
 
 
@@ -106,21 +96,21 @@ def disconnect_request():
 
 @socketio.on('piedra', namespace='/test')
 def piedra(message):
-	arbol_de_juego_pc.new_move(salida + 'R')
-	arbol_de_juego_user.new_move(salida + 'R')
-	emit('my response', {'user_jugada': 'Piedra', 'pc_jugada':obtener_respuesta('R')})
+	arbol_pc.nueva_jugada('R')
+	arbol_jugador.nueva_jugada('R')
+	emit('my response', {'user_jugada': 'Piedra', 'pc_jugada':predecir_respuesta('R')})
 
 @socketio.on('papel', namespace='/test')
 def papel(message):
-	arbol_de_juego_pc.new_move(salida + 'P')
-	arbol_de_juego_user.new_move(salida + 'P')
-	emit('my response', {'user_jugada': 'Papel', 'pc_jugada':obtener_respuesta('P')})
+	arbol_pc.nueva_jugada('P')
+	arbol_jugador.nueva_jugada('P')
+	emit('my response', {'user_jugada': 'Papel', 'pc_jugada':predecir_respuesta('P')})
 
 @socketio.on('tijera', namespace='/test')
 def tijera(message):
-	arbol_de_juego_pc.new_move(salida + 'S')
-	arbol_de_juego_user.new_move(salida + 'S')
-	emit('my response', {'user_jugada': 'Tijera', 'pc_jugada':obtener_respuesta('S')})
+	arbol_pc.nueva_jugada('S')
+	arbol_jugador.nueva_jugada('S')
+	emit('my response', {'user_jugada': 'Tijera', 'pc_jugada':predecir_respuesta('S')})
 
 @socketio.on('obtener cadena', namespace='/test')
 def obtener_cadena():
@@ -135,6 +125,7 @@ def reset_juego():
 def obtener_arbol():
 	#se envia estructura (id, jugada, valor)
 	nodos = [(0,'R',1),(1,'R',2),(2,'P',2),(3,'S',2),(4,'R',2),(5,'S',3)]
+	#se envia estructura (id_source, id_target)
 	arcos = [(0,1),(0,3),(1,4),(3,5),(4,3),(4,5)]
 	emit('arbol',{'nodos':nodos, 'arcos':arcos})
 

@@ -24,17 +24,17 @@
             });
 
             $('form#piedra').submit(function(event) {
-                socket.emit('piedra', {data: 'piedra'});
+                socket.emit('piedra', {data: 'Piedra'});
                 return false;
             });
 
             $('form#papel').submit(function(event) {
-                socket.emit('papel', {data: 'papel'});
+                socket.emit('papel', {data: 'Papel'});
                 return false;
             });
 
             $('form#tijera').submit(function(event) {
-                socket.emit('tijera', {data: 'tijera'});
+                socket.emit('tijera', {data: 'Tijera'});
                 return false;
             });
 
