@@ -1,4 +1,4 @@
-import random, copy
+import random, copy, Queue
 
 class Nodo(object):
     auto_incre = 0
@@ -16,16 +16,18 @@ class Nodo(object):
             self.profundidad = 0
 
     def nueva_jugada(self, cadena):
+        print "cadena1",cadena
         ultimo = cadena[0]
         if len(cadena) > 1:
             if self.hijos[ultimo] is None:
-                n = Nodo(self, id=self.id+1)
-                n.auto_incre += 1
-                self.hijos[ultimo] = n
+                #n = Nodo(self, id=self.id+1)
+                #n.auto_incre += 1
+                self.hijos[ultimo] = Nodo(self, id=self.id+1)
             self.hijos[ultimo].nueva_jugada(cadena[1:])
         else:
-            #multiplicamos por un factor de 0.975
-            self.pesos[ultimo] += self.pesos[ultimo] * 0.975 + 1
+            print "sumamos a:",ultimo," en nivel",self.profundidad,"valor",self.pesos[ultimo]
+            self.pesos[ultimo] +=  1
+            print "valor,",self.pesos[ultimo]
 
     def predecir(self, cadena):
         if len(cadena) > 0:
@@ -64,10 +66,8 @@ class Arbol(object):
     def __init__(self):
         self.auto_incremento_id = 0
         self.arcos = []
-        self.nodos = []
-        n = Nodo(id=self.auto_incremento_id, arcos=self.arcos, nodos=self.nodos)
-        n.auto_incre += 1
-        self.raiz = n
+        self.nodos = {}
+        self.raiz = Nodo(id=self.auto_incremento_id, arcos=self.arcos, nodos=self.nodos)
         self.cadena = ''
 
 
@@ -77,6 +77,7 @@ class Arbol(object):
             self.cadena = self.cadena[-10:]
 
         for i in xrange(1,len(self.cadena)+1):
+            print "for de nueva_juagada"
             self.raiz.nueva_jugada(self.cadena[-i:])
 
     def predecir(self):
@@ -110,6 +111,35 @@ class Arbol(object):
         if self.raiz.hijos['P'] != None:
             self.recorrer_arbol(self.raiz.hijos['P'])
         return
+
+    '''
+    Breadth first para obtener los nodos y arcos de la estructura,
+    retorna el numero de nodos del arbol
+    '''
+    def obtener_arcos(self):
+        id_unico = 0
+        self.nodos = {}
+        self.arcos = []
+        q = Queue.Queue()
+        q.put(self.raiz)
+        while q.qsize():#:
+            #print "while"
+            actual = q.get(block=False)
+            print actual
+            try:
+                aux = self.nodos[actual]
+            except KeyError, e:
+                #print "agrega nodo"
+                self.nodos[actual] = id_unico
+                id_unico = id_unico + 1
+            for clave, nodo in actual.hijos.items():
+                #print "dentro de for"
+                if nodo != None:
+                    #print "crea arco"
+                    self.arcos.append([actual,nodo])
+                    q.put(nodo)
+        return id_unico
+
 
 
     def auto_incremento_id(self):

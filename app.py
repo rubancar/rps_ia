@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import random, copy
+import operator
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
 	close_room, rooms, disconnect
@@ -9,6 +10,7 @@ from rps import Arbol
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
+
 
 #iniciamos varibales para juego
 def empezar_juego():
@@ -68,6 +70,28 @@ def predecir_respuesta(nueva_jugada):
 	else:
 		salida = todas_predicciones[a_jugar]
 	print 'salida_final',salida
+	nodos = arbol_jugador.obtener_arcos()
+	sorted_x = sorted(arbol_jugador.nodos.items(), key=operator.itemgetter(1))
+	nodos_x = []
+	arcos_x = []
+	#creamos la estructura que retorna los nodos
+	for elemento in sorted_x:
+		nodo = elemento[0]
+		id_nodo = elemento[1]
+		for k, v in nodo.pesos.items():
+			if v != 0:
+				nodos_x.append((id_nodo, k, v))
+	#creamos la estructura que retorna los arcos
+	for arco in arbol_jugador.arcos:
+		inicio, fin = arco
+		arcos_x.append((arbol_jugador.nodos[inicio],arbol_jugador.nodos[fin]))
+
+	print "nodos",nodos_x
+	#vaciamos nodos_x para una proxima consulta
+	del nodos_x[:]
+	print "arcos",arcos_x
+	del arcos_x[:]
+	arbol_jugador.imprimir_arbol()
 	#print 'ARBOL:',arbol_jugador.imprimir_arbol()
 	#arbol_jugador.recorrer_arbol(arbol_jugador.raiz)
 	#arbol_jugador.visitados = []
@@ -96,19 +120,19 @@ def disconnect_request():
 
 @socketio.on('piedra', namespace='/test')
 def piedra(message):
-	arbol_pc.nueva_jugada('R')
+	#arbol_pc.nueva_jugada('R')
 	arbol_jugador.nueva_jugada('R')
 	emit('my response', {'user_jugada': 'Piedra', 'pc_jugada':predecir_respuesta('R')})
 
 @socketio.on('papel', namespace='/test')
 def papel(message):
-	arbol_pc.nueva_jugada('P')
+	#arbol_pc.nueva_jugada('P')
 	arbol_jugador.nueva_jugada('P')
 	emit('my response', {'user_jugada': 'Papel', 'pc_jugada':predecir_respuesta('P')})
 
 @socketio.on('tijera', namespace='/test')
 def tijera(message):
-	arbol_pc.nueva_jugada('S')
+	#arbol_pc.nueva_jugada('S')
 	arbol_jugador.nueva_jugada('S')
 	emit('my response', {'user_jugada': 'Tijera', 'pc_jugada':predecir_respuesta('S')})
 
@@ -118,7 +142,7 @@ def obtener_cadena():
 
 @socketio.on('reset juego', namespace='/test')
 def reset_juego():
-	iniciar_juego()
+	empezar_juego()
 	emit('my response', {'data': "juego reseteado"})
 
 @socketio.on('obtener arbol', namespace='/test')
