@@ -1,3 +1,5 @@
+var turnosPT = 0, turnosGA=0;
+
 $(document).ready(function(){
     namespace = '/test'; // change to an empty string to use the global namespace
     socket = io.connect('http://' + document.domain + ':' + location.port + namespace);    
@@ -65,6 +67,10 @@ function showUserHand(element) {
         else
             socket.emit('tijera', {data:'Tijera'});
     }
+    if (chosenAlg == "Genetic Algorithm")
+        turnosGA++;
+    else
+        turnosPT++;
 }
 
 function showPCHand(element) {
@@ -157,6 +163,8 @@ function resetScores(){
         socket.emit('iniciar ga'); //reseteamos juego genetico
     else//reseteamos juego de arbol
         socket.emit('reset juego');
+    turnosPT=0;
+    turnosGA=0;
 }
 
 function createTree(){
@@ -212,12 +220,36 @@ function createTree(){
     var cy = window.cy = cytoscape(cyJson);
 }
 
-function pcThinking(){
-    if (chosenAlg == "Genetic Algorithm")
-        socket.emit('datos ga'); //empezamos con ga
-    else
-        socket.emit('obtener arbol'); //empezamos con arbol de caminos
-    
+function pcThinking(event){
+    if (chosenAlg == "Genetic Algorithm"){
+        if(turnosGA>=5){     
+            $("#errorMsg").html("");       
+            socket.emit('datos ga');   
+        }else{
+            $("#popup").attr("class","modal divGA");
+            showErrorMessage("GENETIC ALGORITHM");
+        } 
+    } else {
+        if(turnosPT>=5){
+            $("#popup").attr("class","modal");
+            $("#errorMsg").html("");
+            socket.emit('obtener arbol');   
+        }else{
+            $("#popup").attr("class","modal divGA");
+            showErrorMessage("PATHS TREE");
+        }
+    }
+}
+
+function showErrorMessage(title){
+    $("div#popup h2").html(title);
+    if(title=="PATHS TREE"){
+        $("#imgTree").attr("src","");
+        $("#msgPred").html("");    
+    } else {        
+        $("#container").html("");
+    }
+    $("#errorMsg").html("Play at least 5 rounds to see what computer is thinking.");
 }
 
 function showMap(){    
@@ -255,7 +287,7 @@ function showPredictionGA(){
     else if(gaInfo.mi_jugada=='Papel') pcMove="PAPER";
     else if(gaInfo.mi_jugada=='Tijera') pcMove="SCISSORS";
 
-    var legend = "According to your last moves, by evolution it has reached the following moves pattern: <br><br><b>"+gaInfo.fenotipo+"</b> with fitness value: <b>"+gaInfo.fitness+"</b><br><br>Considering this, your possible next move could be: <b>"+userMove+"</b>, so the computer will play <b>"+pcMove+"</b>.";
+    var legend = "According to your last moves, by evolution it has reached the following moves pattern: <br><br><b>"+gaInfo.fenotipo+"</b> with fitness value: <b>"+gaInfo.fitness+"</b><br><br>Considering this, your possible next move could be: <b>"+userMove+"</b>, so the computer possible move could be <b>"+pcMove+"</b>.";
     div.html(legend);
 }
 
