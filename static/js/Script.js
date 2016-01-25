@@ -202,7 +202,7 @@ function pcThinking(){
 function showMap(){    
     createTree();
     $("#cy").attr("class","showCanvas"); 
-    treePng = cy.png({ full: true, maxHeight:400 });
+    treePng = cy.png({ full: true, maxHeight:400, maxWidth:500});
     $("#imgTree").attr("src",treePng);
-    $("#cy").remove();
+    $("#cy").attr("class","hidden");
 }
