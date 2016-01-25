@@ -9,15 +9,18 @@ $(document).ready(function(){
 
     socket.on('dibujar arbol', function(msg) {        
         arbol = msg
-        console.log("mi jugada:"+msg.mi_jugada)
-        console.log("prediccion"+msg.prediccion)
         console.log(msg.estrategia)
+        $("div#popup h2").html("PATHS TREE")
         showMap();
+        showPredictionTree();
     });
 
     socket.on('datos geneticos', function(msg) {        
+        gaInfo = msg
         console.log("fenotipo:"+msg.fenotipo)
         console.log('fitness'+msg.fitness)
+        $("div#popup h2").html("GENETIC ALGORITHM")
+        showPredictionGA();
     });
 
     // event handler for new connections
@@ -30,10 +33,6 @@ $(document).ready(function(){
         return false;
     });   
 });
-
-function showAlg(element){
-    socket.emit('obtener arbol');
-}
 
 function showUserHand(element) {
     var imgRock = document.getElementById("user_rock_hand");
@@ -216,6 +215,28 @@ function showMap(){
     treePng = cy.png({ full: true, maxHeight:400, maxWidth:500});
     $("#imgTree").attr("src",treePng);
     $("#cy").attr("class","hidden");
+}
+
+function showPredictionTree(){
+    var userMove="", pcMove="";
+    if(arbol.prediccion=='R') userMove="ROCK";
+    else if(arbol.prediccion=='P') userMove="PAPER";
+    else if(arbol.prediccion=='S') userMove="SCISSORS";
+
+    if(arbol.mi_jugada=='Piedra') pcMove="ROCK";
+    else if(arbol.mi_jugada=='Papel') pcMove="PAPER";
+    else if(arbol.mi_jugada=='Tijera') pcMove="SCISSORS";
+
+    $("#msgPred").html("According to the paths from the tree, your most possible next move could be <b>"+userMove+"</b>. Assuming this, the computer will play <b>"+pcMove+"<b>.");
+}
+
+function showPredictionGA(){
+    var div = $("#container");
+    div.attr("style","margin-left: 0;");
+    $("#popup").attr("class","modal divGA");
+    var userMove = "ROCK", pcMove="PAPER";
+    var legend = "According to your last moves, by evolution it has reached the following moves pattern: <br><br><b>"+gaInfo.fenotipo+"</b> with fitness value: <b>"+gaInfo.fitness+"</b><br><br>Considering this, your possible next move could be: <b>"+userMove+"</b>, so the computer will play <b>"+pcMove+"</b>.";
+    div.html(legend);
 }
 
 function createPopup(){
