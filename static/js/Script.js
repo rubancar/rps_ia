@@ -17,10 +17,6 @@ $(document).ready(function(){
 
     socket.on('datos geneticos', function(msg) {        
         gaInfo = msg
-        console.log("fenotipo:"+msg.fenotipo)
-        console.log('fitness'+msg.fitness)
-        console.log('prediccion'+msg.prediccion)
-        console.log('mi jugada'+msg.mi_jugada)
         $("div#popup h2").html("GENETIC ALGORITHM")
         showPredictionGA();
     });
@@ -249,7 +245,16 @@ function showPredictionGA(){
     var div = $("#container");
     div.attr("style","margin-left: 0;");
     $("#popup").attr("class","modal divGA");
-    var userMove = "ROCK", pcMove="PAPER";
+    
+    var userMove="", pcMove="";
+    if(gaInfo.prediccion=='R') userMove="ROCK";
+    else if(gaInfo.prediccion=='P') userMove="PAPER";
+    else if(gaInfo.prediccion=='S') userMove="SCISSORS";
+
+    if(gaInfo.mi_jugada=='Piedra') pcMove="ROCK";
+    else if(gaInfo.mi_jugada=='Papel') pcMove="PAPER";
+    else if(gaInfo.mi_jugada=='Tijera') pcMove="SCISSORS";
+
     var legend = "According to your last moves, by evolution it has reached the following moves pattern: <br><br><b>"+gaInfo.fenotipo+"</b> with fitness value: <b>"+gaInfo.fitness+"</b><br><br>Considering this, your possible next move could be: <b>"+userMove+"</b>, so the computer will play <b>"+pcMove+"</b>.";
     div.html(legend);
 }
