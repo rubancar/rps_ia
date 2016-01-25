@@ -9,7 +9,9 @@ $(document).ready(function(){
 
     socket.on('dibujar arbol', function(msg) {        
         arbol = msg
-        console.log(msg)
+        console.log("mi jugada:"+msg.mi_jugada)
+        console.log("prediccion"+msg.prediccion)
+        console.log(msg.estrategia)
         showMap();
     });
 

@@ -90,6 +90,7 @@ class Arbol(object):
                     #al estar elevado a la potecia i (profundidad del arbol)
                     resultado[x] += res[x] * (1.5**i)
         r = resultado
+        print "RESULTADO",resultado
         e = r.keys()
         #estoy diciendo como comparar, en este caso se comparan valores de claves diferentes
         #retorna valor mayor, al final (-1)

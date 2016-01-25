@@ -15,7 +15,7 @@ socketio = SocketIO(app)
 #iniciamos varibales para juego
 def empezar_juego():
 	global cadena, arbol_pc, arbol_jugador, salida, mejor_predictor, gana, pierde, \
-	prediccion_pc, prediccion_jugador, mapeo, opciones, todas_predicciones, nodos_x, arcos_x
+	prediccion_pc, prediccion_jugador, mapeo, opciones, todas_predicciones, nodos_x, arcos_x, estrategia
 	arbol_pc = Arbol()
 	arbol_jugador = Arbol()
 	salida = random.choice(["R", "P", "S"])
@@ -30,8 +30,8 @@ def empezar_juego():
 
 empezar_juego()
 
-def predecir_respuesta(nueva_jugada):
-	global salida, nodos_x, arcos_x
+def predecir_respuesta(nueva_jugada, prediccion_y_jugada=True):
+	global salida, nodos_x, arcos_x, estrategia
 	del arcos_x[:]
 	del nodos_x[:]
 	ultima = salida
@@ -39,17 +39,18 @@ def predecir_respuesta(nueva_jugada):
 	Seleccionamos el mejor predictor, de las 6 estrategias, basado en un disenio heuristico llamado
 	(Iocaine Powder) http://dan.egnor.name/iocaine.html
 	'''
-	for i in xrange(len(mejor_predictor)):
-		if todas_predicciones[i] + nueva_jugada in gana:
-			mejor_predictor[i] = mejor_predictor[i] * 0.9 + 1
-		elif todas_predicciones[i] + nueva_jugada in pierde:
-			mejor_predictor[i] = mejor_predictor[i] * 0.9 - 1
-		else:
-			mejor_predictor[i] = mejor_predictor[i] * 0.9 - 0.34
+	if prediccion_y_jugada:
+		for i in xrange(len(mejor_predictor)):
+			if todas_predicciones[i] + nueva_jugada in gana:
+				mejor_predictor[i] = mejor_predictor[i]  + 1
+			elif todas_predicciones[i] + nueva_jugada in pierde:
+				mejor_predictor[i] = mejor_predictor[i] - 1
+			else:
+				mejor_predictor[i] = mejor_predictor[i]  - 0.34
 
 	prediccion_pc = arbol_pc.predecir()
 	prediccion_jugador = arbol_jugador.predecir()
-
+	print "ESTAAAAAAAA ES LA QUE VA A USAR HPPP:",prediccion_jugador
 	# 1) jugar estrategia propia (maquina)
 	todas_predicciones[0] = prediccion_pc
 	# 2) ponerme en los zapatos del jugador (adivinando) y jugar para vencer
@@ -61,18 +62,22 @@ def predecir_respuesta(nueva_jugada):
 	# 5) rotar 3) por dos
 	todas_predicciones[4] = opciones[(opciones.index(todas_predicciones[2]) + 2) % 3]
 	# 6) rotar 4) por dos
-	todas_predicciones[4] = opciones[(opciones.index(todas_predicciones[3]) + 2) % 3]
+	todas_predicciones[5] = opciones[(opciones.index(todas_predicciones[3]) + 2) % 3]
 
 	a_jugar = mejor_predictor.index(max(mejor_predictor))
 	jugar_aleatorio = True
 	for predictor in mejor_predictor:
 		#significa que el score ha ganado 3 veces seguidas
-		if predictor > 2.7:
+		if predictor > 1:
 			jugar_aleatorio = False
 	if jugar_aleatorio:
+		print "ESTRATEGIA RANDOM"
 		salida = random.choice(["R", "P", "S"])
+		estrategia = 'random'
 	else:
+		print "ESTRATEGIA #", a_jugar+1
 		salida = todas_predicciones[a_jugar]
+		estrategia = a_jugar+1
 	print 'salida_final',salida
 	nodos = arbol_jugador.obtener_arcos()
 	sorted_x = sorted(arbol_jugador.nodos.items(), key=operator.itemgetter(1))
@@ -106,7 +111,13 @@ def predecir_respuesta(nueva_jugada):
 	#print 'arcos',arbol_jugador.imprimir_arcos()
 	return mapeo[ultima]
 
-
+def mi_jugada(v):
+	if v=='R' or v=='Piedra':
+		return 'Papel'
+	elif v=='P' or v=='Papel':
+		return 'Tijera'
+	elif v=='S' or v=='Tijera':
+		return 'Piedra'
 
 @app.route('/')
 def index():
@@ -128,21 +139,24 @@ def disconnect_request():
 
 @socketio.on('piedra', namespace='/test')
 def piedra(message):
-	#arbol_pc.nueva_jugada('R')
+	predic = predecir_respuesta('R')
+	arbol_pc.nueva_jugada('R')
 	arbol_jugador.nueva_jugada('R')
-	emit('my response', {'user_jugada': 'Piedra', 'pc_jugada':predecir_respuesta('R')})
+	emit('my response', {'user_jugada': 'Piedra', 'pc_jugada':mi_jugada(predic), 'estrategia':'estrategia'})
 
 @socketio.on('papel', namespace='/test')
 def papel(message):
-	#arbol_pc.nueva_jugada('P')
+	predic = predecir_respuesta('P')
+	arbol_pc.nueva_jugada('P')
 	arbol_jugador.nueva_jugada('P')
-	emit('my response', {'user_jugada': 'Papel', 'pc_jugada':predecir_respuesta('P')})
+	emit('my response', {'user_jugada': 'Papel', 'pc_jugada':mi_jugada(predic), 'estrategia':'estrategia'})
 
 @socketio.on('tijera', namespace='/test')
 def tijera(message):
-	#arbol_pc.nueva_jugada('S')
+	predic = predecir_respuesta('S')
+	arbol_pc.nueva_jugada('S')
 	arbol_jugador.nueva_jugada('S')
-	emit('my response', {'user_jugada': 'Tijera', 'pc_jugada':predecir_respuesta('S')})
+	emit('my response', {'user_jugada': 'Tijera', 'pc_jugada':mi_jugada(predic), 'estrategia':'estrategia'})
 
 @socketio.on('obtener cadena', namespace='/test')
 def obtener_cadena():
@@ -155,11 +169,12 @@ def reset_juego():
 
 @socketio.on('obtener arbol', namespace='/test')
 def obtener_arbol():
+	predic = predecir_respuesta('X',prediccion_y_jugada=False)
 	#se envia estructura (id, jugada, valor)
 	nodos = nodos_x
 	#se envia estructura (id_source, id_target)
 	arcos = arcos_x
-	emit('dibujar arbol',{'nodos':nodos, 'arcos':arcos})
+	emit('dibujar arbol',{'nodos':nodos, 'arcos':arcos, 'prediccion':salida, 'mi_jugada':mi_jugada(salida),'estrategia':estrategia})
 
 @socketio.on('connect', namespace='/test')
 def test_connect():
