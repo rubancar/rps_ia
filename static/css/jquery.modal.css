@@ -37,7 +37,6 @@
   -ms-box-shadow: 0 0 10px #000;
   box-shadow: 0 0 10px #000;
   text-align: center;
-  fadeDuration: 500;
 }
 
 .modal a.close-modal {

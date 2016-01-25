@@ -202,7 +202,7 @@ def jugar_genetico(message):
 @socketio.on('datos ga', namespace='/test')
 def datos_ga():
 	predic = predecir_respuesta_genetica()
-	emit('datos geneticos', {'data': "datos ga",'prediccion':mi_jugada(predic),'fenotipo':fenotipo,'fitness':fitness})
+	emit('datos geneticos', {'data': "datos ga",'prediccion':predic, 'mi_jugada':mi_jugada(predic),'fenotipo':fenotipo,'fitness':fitness})
 
 @socketio.on('obtener arbol', namespace='/test')
 def obtener_arbol():
