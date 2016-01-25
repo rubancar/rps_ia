@@ -15,6 +15,11 @@ $(document).ready(function(){
         showMap();
     });
 
+    socket.on('datos geneticos', function(msg) {        
+        console.log("fenotipo:"+msg.fenotipo)
+        console.log('fitness'+msg.fitness)
+    });
+
     // event handler for new connections
     socket.on('connect', function() {
         socket.emit('my event', {data: 'I\'m connected!'});
@@ -198,7 +203,11 @@ function createTree(){
 }
 
 function pcThinking(){
-    socket.emit('obtener arbol');
+    if (chosenAlg == "Genetic Algorithm")
+        socket.emit('datos ga'); //empezamos con ga
+    else
+        socket.emit('obtener arbol'); //empezamos con arbol de caminos
+    
 }
 
 function showMap(){    
@@ -253,6 +262,10 @@ function createPopup(){
 
 function empezarClicked(event){
     chosenAlg = event.target.value;
+    if (chosenAlg == "Genetic Algorithm")
+        socket.emit('iniciar ga'); //empezamos con ga
+    else
+        socket.emit('reset juego'); //empezamos con arbol de caminos
     cerrarPopup();
 }
 

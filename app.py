@@ -165,7 +165,18 @@ def obtener_cadena():
 @socketio.on('reset juego', namespace='/test')
 def reset_juego():
 	empezar_juego()
-	emit('my response', {'data': "juego reseteado"})
+	emit('my response', {'data': "juego reseteado con arbol de caminos"})
+
+@socketio.on('iniciar ga', namespace='/test')
+def reset_juego():
+	empezar_juego()
+	emit('my response', {'data': "juego reseteado con ga"})
+
+@socketio.on('datos ga', namespace='/test')
+def reset_juego():
+	fenotipo = "RSPRPRPSPRPSPSPRPSPR"
+	fitness = 0.67039
+	emit('datos geneticos', {'data': "datos ga",'fenotipo':fenotipo,'fitness':fitness})
 
 @socketio.on('obtener arbol', namespace='/test')
 def obtener_arbol():
