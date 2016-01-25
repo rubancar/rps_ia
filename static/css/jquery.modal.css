@@ -22,7 +22,8 @@
   vertical-align: middle;
   position: relative;
   z-index: 2;
-  width: 400px;
+  width: 70%;
+  height: 90%;
   background: #fff;
   padding: 15px 30px;
   -webkit-border-radius: 8px;
@@ -35,7 +36,8 @@
   -o-box-shadow: 0 0 10px #000;
   -ms-box-shadow: 0 0 10px #000;
   box-shadow: 0 0 10px #000;
-  text-align: left;
+  text-align: center;
+  fadeDuration: 500;
 }
 
 .modal a.close-modal {
