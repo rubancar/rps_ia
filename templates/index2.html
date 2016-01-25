@@ -73,7 +73,7 @@
 
         <!-- Modal HTML embedded directly into document -->
         <div id="popup" class="modal" style="opacity: 1; display: none;">
-            <h2>DECISION TREE</h2>
+            <h2>PATHS TREE</h2>
             <div id="container">
                 <div id="imgCont">
                     <img id="imgTree" src="">
@@ -83,6 +83,16 @@
                 </div>
             </div>
         </div>
+
+        <div id="initialPop" style="display:none;">
+            <h2>Rock, Paper, Scissors</h2>
+            <div>Escoja el tipo de algoritmo que desea que la computadora implemente:</div>
+            <p>Thanks for clicking.  That felt good.  <a href="#" rel="modal:close">Close</a> or press ESC</p>
+        </div>
+
+        <script>
+            createPopup();
+        </script>
 
     </body>
 </html>

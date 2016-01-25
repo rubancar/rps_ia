@@ -122,6 +122,51 @@ h2{
 	vertical-align: middle;
 }
 
+#initialPop{
+	width: 50%;
+	height: 50%;
+}
+
+.pop{
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    width: 86%;
+    height: 85%;
+    background: rgba(51,51,51,0.7);
+    padding: 100px 0px 0px 191px;
+}
+
+.popBody{
+    width: 60%;
+    height: 30%;
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px 10px 100px 0px;
+    margin-left: 13%;
+    margin-top: 10%;
+    text-align: center;
+    font-family: 'Century Gothic';
+}
+
+#pathsTree,#gA{
+	background-color: #727272;
+	color: white;
+	border: 1px solid #B6B6B6;
+	text-shadow: 0px 1px rgba(0, 0, 0, 0.3);
+	background-image: -moz-linear-gradient(center top , rgb(77, 144, 254), rgb(53, 122, 232));
+	transition: all 0s ease 0s;
+	width: 40%;
+	height: 35px;
+	border-radius: 5px;
+	font-size: 15px;
+	font-weight: bold;
+	font-family: arial;
+	margin-bottom: 10px;
+	cursor: pointer;
+}
+
 
 
 
