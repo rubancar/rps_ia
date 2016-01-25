@@ -7,8 +7,9 @@ $(document).ready(function(){
         if(msg.user_jugada!=undefined) setScores(msg.user_jugada,msg.pc_jugada);
     });
 
-    socket.on('arbol', function(msg) {        
+    socket.on('dibujar arbol', function(msg) {        
         arbol = msg
+        console.log(msg)
         showMap();
     });
 
@@ -183,7 +184,7 @@ function createTree(){
     var edges = arbol.arcos;
     //Add nodes
     for(i=0; i<nodes.length; i++){
-        cyJson["elements"]["nodes"].push({data: { id: nodes[i][0], label: 'R:'+nodes[i][1]+' S:'+nodes[i][2]+' P:10' }});
+        cyJson["elements"]["nodes"].push({data: { id: nodes[i][0], label: 'R:'+nodes[i][1]+' S:'+nodes[i][2]+' P:'+nodes[i][3] }});
     }
 
     //Add edges

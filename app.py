@@ -15,7 +15,7 @@ socketio = SocketIO(app)
 #iniciamos varibales para juego
 def empezar_juego():
 	global cadena, arbol_pc, arbol_jugador, salida, mejor_predictor, gana, pierde, \
-	prediccion_pc, prediccion_jugador, mapeo, opciones, todas_predicciones
+	prediccion_pc, prediccion_jugador, mapeo, opciones, todas_predicciones, nodos_x, arcos_x
 	arbol_pc = Arbol()
 	arbol_jugador = Arbol()
 	salida = random.choice(["R", "P", "S"])
@@ -25,11 +25,15 @@ def empezar_juego():
 	pierde = ['SR', 'PS', 'RP']
 	opciones = ['R','P','S']
 	mapeo = {'R':'Piedra','P':'Papel','S':'Tijera'}
+	nodos_x = []
+	arcos_x = []
 
 empezar_juego()
 
 def predecir_respuesta(nueva_jugada):
-	global salida
+	global salida, nodos_x, arcos_x
+	del arcos_x[:]
+	del nodos_x[:]
 	ultima = salida
 	'''
 	Seleccionamos el mejor predictor, de las 6 estrategias, basado en un disenio heuristico llamado
@@ -78,9 +82,13 @@ def predecir_respuesta(nueva_jugada):
 	for elemento in sorted_x:
 		nodo = elemento[0]
 		id_nodo = elemento[1]
-		for k, v in nodo.pesos.items():
-			if v != 0:
-				nodos_x.append((id_nodo, k, v))
+		r = nodo.pesos['R']
+		s = nodo.pesos['S']
+		p = nodo.pesos['P']
+		nodos_x.append((id_nodo, r, s, p))
+		#for k, v in nodo.pesos.items():
+		#	if v != 0:
+		#		nodos_x.append((id_nodo, k, v))
 	#creamos la estructura que retorna los arcos
 	for arco in arbol_jugador.arcos:
 		inicio, fin = arco
@@ -88,9 +96,9 @@ def predecir_respuesta(nueva_jugada):
 
 	print "nodos",nodos_x
 	#vaciamos nodos_x para una proxima consulta
-	del nodos_x[:]
+	#del nodos_x[:]
 	print "arcos",arcos_x
-	del arcos_x[:]
+	#del arcos_x[:]
 	arbol_jugador.imprimir_arbol()
 	#print 'ARBOL:',arbol_jugador.imprimir_arbol()
 	#arbol_jugador.recorrer_arbol(arbol_jugador.raiz)
@@ -148,10 +156,10 @@ def reset_juego():
 @socketio.on('obtener arbol', namespace='/test')
 def obtener_arbol():
 	#se envia estructura (id, jugada, valor)
-	nodos = [(0,'R',1),(1,'R',2),(2,'P',2),(3,'S',2),(4,'R',2),(5,'S',3)]
+	nodos = nodos_x
 	#se envia estructura (id_source, id_target)
-	arcos = [(0,1),(0,3),(1,4),(3,5),(4,3),(4,5)]
-	emit('arbol',{'nodos':nodos, 'arcos':arcos})
+	arcos = arcos_x
+	emit('dibujar arbol',{'nodos':nodos, 'arcos':arcos})
 
 @socketio.on('connect', namespace='/test')
 def test_connect():
