@@ -287,7 +287,7 @@ function showPredictionGA(){
     else if(gaInfo.mi_jugada=='Papel') pcMove="PAPER";
     else if(gaInfo.mi_jugada=='Tijera') pcMove="SCISSORS";
 
-    var legend = "According to your last moves, by evolution it has reached the following moves pattern: <br><br><b>"+gaInfo.fenotipo+"</b> with fitness value: <b>"+gaInfo.fitness+"</b><br><br>Considering this, your possible next move could be: <b>"+userMove+"</b>, so the computer possible move could be <b>"+pcMove+"</b>.";
+    var legend = "According to your last moves, by evolution it has reached the following moves pattern: <br><br><b>"+gaInfo.fenotipo+"</b> with fitness value: <b>"+gaInfo.fitness.toFixed(3)+"</b><br><br>Considering this, your possible next move could be: <b>"+userMove+"</b>, so the computer possible move could be <b>"+pcMove+"</b>.";
     div.html(legend);
 }
 
