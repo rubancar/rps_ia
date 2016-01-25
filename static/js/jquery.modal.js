@@ -52,6 +52,7 @@
 
     open: function() {
       var m = this;
+      this.options.fadeDuration=250;
       if(this.options.doFade) {
         this.block();
         setTimeout(function() {

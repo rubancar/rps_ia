@@ -206,3 +206,55 @@ function showMap(){
     $("#imgTree").attr("src",treePng);
     $("#cy").attr("class","hidden");
 }
+
+function createPopup(){
+    var popup, popupBody, bodySection, title, subtitle, members, inst;
+
+    popup = document.createElement("div");
+    popup.setAttribute("class", "pop");
+
+    popupBody = document.createElement("div");
+    popupBody.setAttribute("class","popBody");
+
+    title = document.createElement("h2");
+    title.innerHTML = "Rock, Paper, Scissors";
+    popupBody.appendChild(title);
+
+    members = document.createElement("p");
+    var t = document.createTextNode("Choose the algorithm you want the computer to implement:")
+    members.appendChild(t);
+    popupBody.appendChild(members);
+
+    var div = document.createElement("div");
+    var pathsTree = document.createElement("input");
+    pathsTree.setAttribute("id","pathsTree");
+    pathsTree.setAttribute("type","submit");
+    pathsTree.setAttribute("value","Paths Tree");
+    pathsTree.addEventListener("click",empezarClicked,false);
+    div.appendChild(pathsTree);
+    popupBody.appendChild(div);
+
+    var div = document.createElement("div");
+    var gA = document.createElement("input");
+    gA.setAttribute("id","gA");
+    gA.setAttribute("type","submit");
+    gA.setAttribute("value","Genetic Algorithm");
+    gA.addEventListener("click",empezarClicked,false);
+    div.appendChild(gA);
+    popupBody.appendChild(div);
+
+    popup.appendChild(popupBody);
+
+    bodySection = document.body;
+    bodySection.appendChild(popup);
+}
+
+function empezarClicked(event){
+    chosenAlg = event.target.value;
+    cerrarPopup();
+}
+
+function cerrarPopup(){
+    var popup = document.getElementsByClassName("pop")[0];
+    document.body.removeChild(popup);
+}
