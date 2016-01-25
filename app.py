@@ -5,12 +5,23 @@ from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
 	close_room, rooms, disconnect
 from rps import Arbol
+from rps_genetico import RPSGenetico
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
+
+def empezar_juego_ga():
+	global juego_ga
+	juego_ga = RPSGenetico()
+
+def predecir_respuesta_genetica():
+	global fenotipo, fitness
+	fenotipo = juego_ga.mejor_fenotipo
+	fitness = juego_ga.fitness
+	return juego_ga.obtener_jugada()
 
 #iniciamos varibales para juego
 def empezar_juego():
@@ -28,7 +39,7 @@ def empezar_juego():
 	nodos_x = []
 	arcos_x = []
 
-empezar_juego()
+#empezar_juego()
 
 def predecir_respuesta(nueva_jugada, prediccion_y_jugada=True):
 	global salida, nodos_x, arcos_x, estrategia
@@ -119,6 +130,14 @@ def mi_jugada(v):
 	elif v=='S' or v=='Tijera':
 		return 'Piedra'
 
+def mapeo_a_inicial(v):
+	if v == 'Piedra':
+		return 'R'
+	elif v == 'Papel':
+		return 'P'
+	elif v == 'Tijera':
+		return 'S'
+
 @app.route('/')
 def index():
 	return render_template('index2.html')
@@ -168,15 +187,22 @@ def reset_juego():
 	emit('my response', {'data': "juego reseteado con arbol de caminos"})
 
 @socketio.on('iniciar ga', namespace='/test')
-def reset_juego():
-	empezar_juego()
+def reset_juego_ga():
+	empezar_juego_ga()
 	emit('my response', {'data': "juego reseteado con ga"})
 
+@socketio.on('jugar genetico', namespace='/test')
+def jugar_genetico(message):
+	jugada = message["data"]
+	predic = predecir_respuesta_genetica()
+	juego_ga.agregar_jugada(mapeo_a_inicial(jugada))
+	print "jugada en ga user:",jugada
+	emit('my response', {'user_jugada': jugada, 'pc_jugada':mi_jugada(predic), 'estrategia':'estrategia'})
+
 @socketio.on('datos ga', namespace='/test')
-def reset_juego():
-	fenotipo = "RSPRPRPSPRPSPSPRPSPR"
-	fitness = 0.67039
-	emit('datos geneticos', {'data': "datos ga",'fenotipo':fenotipo,'fitness':fitness})
+def datos_ga():
+	predic = predecir_respuesta_genetica()
+	emit('datos geneticos', {'data': "datos ga",'prediccion':mi_jugada(predic),'fenotipo':fenotipo,'fitness':fitness})
 
 @socketio.on('obtener arbol', namespace='/test')
 def obtener_arbol():

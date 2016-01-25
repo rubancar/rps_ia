@@ -18,6 +18,7 @@ $(document).ready(function(){
     socket.on('datos geneticos', function(msg) {        
         console.log("fenotipo:"+msg.fenotipo)
         console.log('fitness'+msg.fitness)
+        console.log('prediccion'+msg.prediccion)
     });
 
     // event handler for new connections
@@ -44,19 +45,29 @@ function showUserHand(element) {
         imgRock.setAttribute("class","show");
         imgPaper.setAttribute("class","hidden");
         imgScissors.setAttribute("class","hidden");
-        socket.emit('piedra', {data: 'Piedra'});
+        if (chosenAlg == "Genetic Algorithm")
+            socket.emit('jugar genetico',{data: 'Piedra'}); //empezamos con ga
+        else
+            socket.emit('piedra', {data:'Piedra'});
+        
     }
     if(element.getAttribute("data-section")=="user_paper_hand"){
         imgRock.setAttribute("class","hidden");
         imgPaper.setAttribute("class","show");
         imgScissors.setAttribute("class","hidden");
-         socket.emit('papel', {data: 'Papel'});
+        if (chosenAlg == "Genetic Algorithm")
+            socket.emit('jugar genetico',{data:'Papel'}); //empezamos con ga
+        else
+            socket.emit('papel', {data:'Papel'});
     }
     if(element.getAttribute("data-section")=="user_scissors_hand"){
         imgRock.setAttribute("class","hidden");
         imgPaper.setAttribute("class","hidden");
         imgScissors.setAttribute("class","show");
-        socket.emit('tijera', {data: 'Tijera'});
+        if (chosenAlg == "Genetic Algorithm")
+            socket.emit('jugar genetico',{data:'Tijera'}); //empezamos con ga
+        else
+            socket.emit('tijera', {data:'Tijera'});
     }
 }
 
@@ -146,7 +157,10 @@ function resetScores(){
     document.getElementById("user_paper_hand").setAttribute("class","hidden");
     document.getElementById("user_scissors_hand").setAttribute("class","hidden");
     showPCHand("Piedra");
-    socket.emit('reset juego');
+    if (chosenAlg == "Genetic Algorithm")
+        socket.emit('iniciar ga'); //reseteamos juego genetico
+    else//reseteamos juego de arbol
+        socket.emit('reset juego');
 }
 
 function createTree(){

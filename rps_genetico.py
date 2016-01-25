@@ -16,6 +16,8 @@ class RPSGenetico():
 		self.ganan = ('RS','SP','PR')
 		self.pierden = ('SR','PS','RP')
 		self.vence = {'R':'P','S':'R','P':'S'}
+		self.mejor_fenotipo = None
+		self.fitness = None
 
 	def agregar_jugada(self, mov):
 		self.cadena += mov
@@ -46,6 +48,8 @@ class RPSGenetico():
 			#retornamos la posible jugada
 			self.vieja_mejor_generacion = self.generacion_actual.obtener_mejor_generacion()
 			posible_jugada = self.generacion_actual.obtener_posible_jugada(self.cadena)
+			self.mejor_fenotipo = self.generacion_actual.cadena_final
+			self.fitness = self.generacion_actual.calidad_de_generacion() 
 			return self.vence[posible_jugada]
 
 
@@ -62,6 +66,7 @@ class Generacion():
 		self.calidad = 0
 		self.contador_generacion = contador_generacion
 		self.vieja_generacion = vieja_generacion
+		self.cadena_final = None
 		print "Generacion #",self.contador_generacion
 
 	def nueva_generacion_aleatoria(self):
@@ -110,14 +115,14 @@ class Generacion():
 		for hijo in ordenar_mejores_hijos:
 			print hijo
 		#analizamos las 2 mejores cadenas y elejimos secuencias repetidas de las 2
-		cadena_final = ordenar_mejores_hijos[0].fenotipo_como_cadena()
+		self.cadena_final = ordenar_mejores_hijos[0].fenotipo_como_cadena()
 		posibles = []
 		for i in xrange(1,4):
 			sub = secuencia_de_juego[-i]
-			indice = cadena_final.find(sub)
+			indice = self.cadena_final.find(sub)
 			print "indice",indice
-			if indice != -1 and indice != (len(cadena_final)-1):
-				posibles.append(cadena_final[indice+1])
+			if indice != -1 and indice != (len(self.cadena_final)-1):
+				posibles.append(self.cadena_final[indice+1])
 		#retorno el ultimo debido a que es el mejor de todos, cadena mas larga
 		if len(posibles) == 0:
 			print "retorno aleatorio"
@@ -212,52 +217,3 @@ class Individuo():
 
 	def __str__(self):
 		return "fenotipo: "+self.fenotipo_como_cadena()+" relevancia: "+str(self.relevancia)
-
-class _Getch:
-    """Gets a single character from standard input.  Does not echo to the
-screen."""
-    def __init__(self):
-        try:
-            self.impl = _GetchWindows()
-        except ImportError:
-            self.impl = _GetchUnix()
-
-    def __call__(self): return self.impl()
-
-
-class _GetchUnix:
-    def __init__(self):
-        import tty, sys
-
-    def __call__(self):
-        import sys, tty, termios
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
-
-
-class _GetchWindows:
-    def __init__(self):
-        import msvcrt
-
-    def __call__(self):
-        import msvcrt
-        return msvcrt.getch()
-
-		
-if __name__ == "__main__":
-	getch = _Getch()
-	rondas = 100
-	juego = RPSGenetico()
-	for i in xrange(rondas):
-		print "Ingrese opcion R, P o S:",
-		opcion = getch()
-		print opcion
-		print "Jugada maquina",juego.obtener_jugada()
-		juego.agregar_jugada(opcion)
-	#print "distancia: ",levenshtein(palabra1,palabra2)
